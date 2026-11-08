@@ -10,7 +10,7 @@ public class DirectoryNode extends AbstractNode {
     public List<Element> getChildren() {
         return List.copyOf(children);
     }
-    public void add(Element child) {
+    public void add(AbstractNode child) {
         if (child == null){
             throw new IllegalArgumentException("Cannot add null child");
         }
@@ -19,6 +19,21 @@ public class DirectoryNode extends AbstractNode {
                 throw new IllegalArgumentException("Duplicate child name");
             }
         }
+        if (child.getParent() != null) {
+            throw new IllegalStateException("Child already has a parent");
+        }
+
+        DirectoryNode current = this;
+
+        while (current != null) {
+
+            if (current == child) {
+                throw new IllegalArgumentException("Cycle detected");
+            }
+
+            current = current.getParent();
+        }
+        child.setParent(this);
         children.add(child);
     }
     @Override
